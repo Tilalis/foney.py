@@ -20,7 +20,7 @@ if __name__ == "__main__":
                 result = node.traverse()
                 print(result)
 
-        except EOFError:
+        except (EOFError, KeyboardInterrupt):
             break
         except KeyError as key_error:
             print("Error: name {} is not defined".format(key_error))
