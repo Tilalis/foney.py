@@ -86,10 +86,10 @@ class Parser:
 
             return Money(token)
 
-        if token.type == TokenType.RPAREN:
-            self.eat(TokenType.RPAREN)
-            node = self.expr()
+        if token.type == TokenType.LPAREN:
             self.eat(TokenType.LPAREN)
+            node = self.expr()
+            self.eat(TokenType.RPAREN)
             return node
 
     parse = set
