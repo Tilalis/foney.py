@@ -20,7 +20,7 @@ class CurrencyStore(type):
         "Br": "BYN"
     }
 
-    aliases = "".join(_aliases.keys())
+    aliases = list(_aliases.keys())
 
     def __call__(cls, name, *args, **kwargs):
         alias = CurrencyStore._aliases.get(name, None)
@@ -202,6 +202,20 @@ class Money:
 
         other = Decimal(other)
         return Money(round(self._amount / other, 2), self._currency)
+
+    def __gt__(self, other: typing.Union["Money", int, float, Decimal]):
+        if isinstance(other, (int, float, Decimal)):
+            return self._amount > other
+
+        other = self._convert_other(other)
+        return self._amount > other._amount
+
+    def __eq__(self, other: typing.Union["Money", int, float, Decimal]):
+        if isinstance(other, (int, float, Decimal)):
+            return self._amount == other
+
+        other = self._convert_other(other)
+        return self._amount == other._amount
 
     def __str__(self):
         if self._currency.use_alias:
