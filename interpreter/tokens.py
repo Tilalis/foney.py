@@ -19,7 +19,8 @@ class TokenType(Enum):
     SYMBOL = 9
     ASSIGN = 10
 
-    EOF = 11
+    DELIMITER = 11
+    EOF = 12
 
     def __str__(self):
         return self.name

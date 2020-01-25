@@ -87,3 +87,22 @@ class Assign(BinaryOperator):
             self.left.value,
             self.right.traverse()
         )
+
+
+class Statements(AST):
+    def __init__(self, nodes=None):
+        if nodes is None:
+            nodes = []
+
+        self._nodes = nodes
+
+    def add(self, node):
+        self._nodes.append(node)
+
+    def traverse(self):
+        for node in self._nodes[:-1]:
+            node.traverse()
+
+        if self._nodes:
+            last_node = self._nodes[-1]
+            return last_node.traverse()

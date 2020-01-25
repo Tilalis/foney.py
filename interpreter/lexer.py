@@ -72,16 +72,6 @@ class Lexer:
                 value=alphanumeric
             )
 
-    def name(self):
-        name = "".join(self.read_while(
-            lambda s: s in ascii_letters
-        ))
-
-        return Token(
-            type=TokenType.SYMBOL,
-            value=name
-        )
-
     def __iter__(self):
         return self
 
@@ -93,12 +83,12 @@ class Lexer:
             self._finished = True
             return Token(TokenType.EOF, None)
 
-        if self._current.isspace():
+        if self._current != '\n' and self._current.isspace():
             self.skip()
 
-        number_currency_name = self.symbol()
-        if number_currency_name is not None:
-            return number_currency_name
+        symbol = self.symbol()
+        if symbol is not None:
+            return symbol
 
         token_type = {
             '+': TokenType.PLUS,
@@ -107,6 +97,8 @@ class Lexer:
             '/': TokenType.DIV,
             '(': TokenType.LPAREN,
             ')': TokenType.RPAREN,
+            ';': TokenType.DELIMITER,
+            '\n': TokenType.DELIMITER,
             '=': TokenType.ASSIGN
         }.get(self._current, None)
 
@@ -116,5 +108,4 @@ class Lexer:
 
             return Token(token_type, value=value)
 
-        return self.name()
-
+        print("Should not get here")

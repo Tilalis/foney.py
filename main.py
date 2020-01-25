@@ -26,11 +26,8 @@ def interpret(expression):
 
 
 def from_file(filename):
-    result = None
     with open(filename, "r") as f:
-        # TODO: Fix this
-        for line in f:
-            result = interpret(line.replace('\n', ''))
+        result = interpret(f)
 
     print(result)
 

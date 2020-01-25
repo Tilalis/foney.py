@@ -2,7 +2,7 @@ from typing import Union
 
 from interpreter.lexer import Lexer
 from interpreter.tokens import TokenType
-from interpreter.ast import Symbol, Number, Money, BinaryOperator, Assign
+from interpreter.ast import Symbol, Number, Money, BinaryOperator, Assign, Statements
 
 
 class Parser:
@@ -16,12 +16,44 @@ class Parser:
         else:
             raise Exception("Invalid syntax on token: {}".format(self._current))
 
+    def statements(self):
+        """
+        statements: statement | statement DELIMITER (statements)*
+        statement:  expr | SYMBOL ASSIGN statement
+        expr:       term ((PLUS | MINUS) term)*"
+        term:       factor ((MUL | DIV) factor)*"
+        factor:     (NUMBER | MONEY | SYMBOL) | LPAREN expr RPAREN"
+        """
+
+        statement = self.statement()
+        statements = Statements()
+        statements.add(statement)
+
+        while self._current.type == TokenType.DELIMITER:
+            self.eat(self._current.type)
+
+            statement = self.statement()
+            if statement:
+                statements.add(statement)
+
+        return statements
+
+    def statement(self):
+        node = self.expr()
+
+        if node and node.token.type == TokenType.SYMBOL and self._current.type == TokenType.ASSIGN:
+            token = self._current
+            self.eat(token.type)
+
+            node = Assign(
+                left=node,
+                operator=token,
+                right=self.statement()
+            )
+
+        return node
+
     def expr(self):
-        """
-        expr:   term ((PLUS | MINUS) term)* | SYMBOL ASSIGN expr"
-        term:   factor ((MUL | DIV) factor)*"
-        factor: (NUMBER | MONEY | SYMBOL) | LPAREN expr RPAREN"
-        """
         node = self.term()
 
         while self._current.type in (TokenType.PLUS, TokenType.MINUS):
@@ -33,16 +65,6 @@ class Parser:
                 left=node,
                 operator=token,
                 right=right
-            )
-
-        if self._current.type == TokenType.ASSIGN:
-            token = self._current
-            self.eat(self._current.type)
-
-            node = Assign(
-                left=node,
-                operator=token,
-                right=self.expr()
             )
 
         return node
@@ -87,7 +109,7 @@ class Parser:
             return node
 
     def parse(self):
-        node = self.expr()
+        node = self.statements()
 
         if self._current.type != TokenType.EOF:
             raise Exception("Unexpected EOF!")
