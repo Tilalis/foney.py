@@ -17,7 +17,7 @@ class TokenType(Enum):
     RPAREN = 8
 
     SYMBOL = 9
-    SET = 10
+    ASSIGN = 10
 
     EOF = 11
 

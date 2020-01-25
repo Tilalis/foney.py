@@ -47,7 +47,7 @@ class BinaryOperator(AST):
         assert isinstance(left, (Token, AST)), "left should be instance of TokenType or AST"
         assert isinstance(right, (Token, AST)), "left should be instance of TokenType or AST"
 
-        assert operator.type in TokenType.binary_operators or operator.type == TokenType.SET, \
+        assert operator.type in TokenType.binary_operators or operator.type == TokenType.ASSIGN, \
             "TokenType should be binary operator! {}".format(
                 TokenType.binary_operators
             )
@@ -70,7 +70,7 @@ class BinaryOperator(AST):
         )
 
 
-class SetOperator(BinaryOperator):
+class Assign(BinaryOperator):
     def __init__(self, left, operator, right, setter=namespace.set):
         super().__init__(left, operator, right)
         self._setter = setter

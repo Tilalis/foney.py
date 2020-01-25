@@ -2,7 +2,7 @@ from typing import Union
 
 from interpreter.lexer import Lexer
 from interpreter.tokens import TokenType
-from interpreter.ast import Symbol, Number, Money, BinaryOperator, SetOperator
+from interpreter.ast import Symbol, Number, Money, BinaryOperator, Assign
 
 
 class Parser:
@@ -16,31 +16,15 @@ class Parser:
         else:
             raise Exception("Invalid syntax on token: {}".format(self._current))
 
-    def set(self):
-        node = self.expr()
-        token = self._current
-
-        if token.type == TokenType.SET:
-            self.eat(token.type)
-            right = self.expr()
-            node = SetOperator(
-                left=node,
-                operator=token,
-                right=right
-            )
-
-        return node
-
     def expr(self):
         """
-        set:    NAME SET expr
-        expr:   term ((PLUS | MINUS) term)*"
+        expr:   term ((PLUS | MINUS) term)* | SYMBOL ASSIGN expr"
         term:   factor ((MUL | DIV) factor)*"
-        factor: (NUMBER | MONEY | NAME) | LPAREN expr RPAREN"
+        factor: (NUMBER | MONEY | SYMBOL) | LPAREN expr RPAREN"
         """
         node = self.term()
 
-        while self._current.type in (TokenType.PLUS, TokenType.MINUS):
+        while node and self._current.type in (TokenType.PLUS, TokenType.MINUS):
             token = self._current
             self.eat(token.type)
 
@@ -49,6 +33,20 @@ class Parser:
                 left=node,
                 operator=token,
                 right=right
+            )
+
+        if self._current.type == TokenType.SYMBOL:
+            symbol = Symbol(self._current)
+
+            self.eat(self._current.type)
+
+            assign = self._current
+            self.eat(self._current.type)
+
+            node = Assign(
+                left=symbol,
+                operator=assign,
+                right=self.expr()
             )
 
         return node
@@ -71,12 +69,8 @@ class Parser:
         return node
 
     def factor(self):
-        """factor: (NUMBER | MONEY | NAME) | LPAREN expr RPAREN"""
+        """factor: (NUMBER | MONEY) | LPAREN expr RPAREN"""
         token = self._current
-
-        if token.type == TokenType.SYMBOL:
-            self.eat(token.type)
-            return Symbol(token)
 
         if token.type in (TokenType.NUMBER, TokenType.MONEY):
             self.eat(token.type)
@@ -92,7 +86,7 @@ class Parser:
             self.eat(TokenType.RPAREN)
             return node
 
-    parse = set
+    parse = expr
 
 
 

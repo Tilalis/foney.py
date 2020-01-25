@@ -107,7 +107,7 @@ class Lexer:
             '/': TokenType.DIV,
             '(': TokenType.LPAREN,
             ')': TokenType.RPAREN,
-            '=': TokenType.SET
+            '=': TokenType.ASSIGN
         }.get(self._current, None)
 
         if token_type:
