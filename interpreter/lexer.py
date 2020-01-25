@@ -68,7 +68,7 @@ class Lexer:
         # TODO: Need to fix this
         if currency:
             return Token(
-                TokenType.NAME,
+                TokenType.SYMBOL,
                 value=currency
             )
 
@@ -78,7 +78,7 @@ class Lexer:
         ))
 
         return Token(
-            type=TokenType.NAME,
+            type=TokenType.SYMBOL,
             value=name
         )
 

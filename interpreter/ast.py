@@ -12,7 +12,7 @@ class AST(metaclass=ABCMeta):
         pass
 
 
-class _Symbol(AST):
+class _Value(AST):
     def __init__(self, token):
         self.token = token
         self.value = token.value
@@ -21,21 +21,21 @@ class _Symbol(AST):
         return self.value
 
 
-class Number(_Symbol):
+class Number(_Value):
     def __init__(self, token):
         assert token.type == TokenType.NUMBER, "TokenType should be NUMBER"
         super().__init__(token)
 
 
-class Money(_Symbol):
+class Money(_Value):
     def __init__(self, token):
         assert token.type == TokenType.MONEY, "TokenType should be MONEY"
         super().__init__(token)
 
 
-class Name(_Symbol):
+class Symbol(_Value):
     def __init__(self, token):
-        assert token.type == TokenType.NAME, "TokenType should be NAME"
+        assert token.type == TokenType.SYMBOL, "TokenType should be SYMBOL"
         super().__init__(token)
 
     def traverse(self):
@@ -70,13 +70,13 @@ class BinaryOperator(AST):
         )
 
 
-class Setter(BinaryOperator):
+class SetOperator(BinaryOperator):
     def __init__(self, left, operator, right, setter=namespace.set):
         super().__init__(left, operator, right)
         self._setter = setter
 
     def traverse(self, operators=None):
-        if not isinstance(self.left, Name):
+        if not isinstance(self.left, Symbol):
             type_ = "Expression" if isinstance(self.left, AST) else self.left
 
             raise SyntaxError("{} cannot be used as Name".format(

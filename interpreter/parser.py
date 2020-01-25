@@ -2,7 +2,7 @@ from typing import Union
 
 from interpreter.lexer import Lexer
 from interpreter.tokens import TokenType
-from interpreter.ast import Name, Number, Money, BinaryOperator, Setter
+from interpreter.ast import Symbol, Number, Money, BinaryOperator, SetOperator
 
 
 class Parser:
@@ -23,7 +23,7 @@ class Parser:
         if token.type == TokenType.SET:
             self.eat(token.type)
             right = self.expr()
-            node = Setter(
+            node = SetOperator(
                 left=node,
                 operator=token,
                 right=right
@@ -74,9 +74,9 @@ class Parser:
         """factor: (NUMBER | MONEY | NAME) | LPAREN expr RPAREN"""
         token = self._current
 
-        if token.type == TokenType.NAME:
+        if token.type == TokenType.SYMBOL:
             self.eat(token.type)
-            return Name(token)
+            return Symbol(token)
 
         if token.type in (TokenType.NUMBER, TokenType.MONEY):
             self.eat(token.type)
