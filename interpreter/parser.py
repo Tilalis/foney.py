@@ -24,7 +24,7 @@ class Parser:
         """
         node = self.term()
 
-        while node and self._current.type in (TokenType.PLUS, TokenType.MINUS):
+        while self._current.type in (TokenType.PLUS, TokenType.MINUS):
             token = self._current
             self.eat(token.type)
 
@@ -35,17 +35,13 @@ class Parser:
                 right=right
             )
 
-        if self._current.type == TokenType.SYMBOL:
-            symbol = Symbol(self._current)
-
-            self.eat(self._current.type)
-
-            assign = self._current
+        if self._current.type == TokenType.ASSIGN:
+            token = self._current
             self.eat(self._current.type)
 
             node = Assign(
-                left=symbol,
-                operator=assign,
+                left=node,
+                operator=token,
                 right=self.expr()
             )
 
@@ -69,7 +65,7 @@ class Parser:
         return node
 
     def factor(self):
-        """factor: (NUMBER | MONEY) | LPAREN expr RPAREN"""
+        """factor: (NUMBER | MONEY | SYMBOL) | LPAREN expr RPAREN"""
         token = self._current
 
         if token.type in (TokenType.NUMBER, TokenType.MONEY):
@@ -79,6 +75,10 @@ class Parser:
                 return Number(token)
 
             return Money(token)
+
+        if token.type == TokenType.SYMBOL:
+            self.eat(token.type)
+            return Symbol(token)
 
         if token.type == TokenType.LPAREN:
             self.eat(TokenType.LPAREN)

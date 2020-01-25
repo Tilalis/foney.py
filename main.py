@@ -22,9 +22,9 @@ if __name__ == "__main__":
 
         except (EOFError, KeyboardInterrupt):
             break
-        except KeyError as key_error:
-            print("Error: name {} is not defined".format(key_error))
-        except commands.CommandError as command_error:
-            print(command_error)
-        except Exception as exception:
-            print("{}: {}".format(type(exception).__name__, str(exception)))
+        # except KeyError as key_error:
+        #     print("Error: name {} is not defined".format(key_error))
+        # except commands.CommandError as command_error:
+        #     print(command_error)
+        # except Exception as exception:
+        #     print("{}: {}".format(type(exception).__name__, str(exception)))
