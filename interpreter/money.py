@@ -192,7 +192,7 @@ class Money:
         assert isinstance(other, (Decimal, int, float)), "Type of non-money argument should be Decimal, int or float!"
 
         other = Decimal(other)
-        return Money(self._amount * other, self._currency)
+        return Money(round(self._amount * other, 2), self._currency)
 
     def __rmul__(self, other):
         return self.__mul__(other)
@@ -201,7 +201,7 @@ class Money:
         assert isinstance(other, (Decimal, int, float)), "Type of non-money argument should be Decimal, int or float!"
 
         other = Decimal(other)
-        return Money(self._amount / other, self._currency)
+        return Money(round(self._amount / other, 2), self._currency)
 
     def __str__(self):
         if self._currency.use_alias:
