@@ -9,7 +9,7 @@ from interpreter.money import Money, Currency, CurrencyStore
 
 
 class Lexer:
-    allowed_currency_chars = ascii_letters + CurrencyStore.aliases
+    allowed_currency_chars = list(ascii_letters) + CurrencyStore.aliases + ["$", "_"]
 
     def __init__(self, stream: Union[IOBase, str]):
         if isinstance(stream, str):
@@ -35,41 +35,41 @@ class Lexer:
         while self._current and self._current.isspace():
             self.read()
 
-    def number_currency_name(self):
-        number = "".join(self.read_while(
+    def symbol(self):
+        digits = "".join(self.read_while(
             lambda s: s.isdigit() or s == '.'
         ))
 
-        currency = "".join(self.read_while(
+        alphanumeric = "".join(self.read_while(
             lambda s: s in Lexer.allowed_currency_chars
         ))
 
-        if not number:
-            number = "".join(self.read_while(
+        if not digits:
+            digits = "".join(self.read_while(
                 lambda s: s.isdigit() or s == '.'
             ))
 
-        if number and currency:
+        if digits and alphanumeric:
             return Token(
                 type=TokenType.MONEY,
                 value=Money(
-                    amount=Decimal(number),
-                    currency=Currency(currency)
+                    amount=Decimal(digits),
+                    currency=Currency(alphanumeric)
                 )
             )
 
-        if number:
+        if digits:
             return Token(
                 type=TokenType.NUMBER,
-                value=Decimal(number)
+                value=Decimal(digits)
             )
 
         # If no number, then it's name
         # TODO: Need to fix this
-        if currency:
+        if alphanumeric:
             return Token(
                 TokenType.SYMBOL,
-                value=currency
+                value=alphanumeric
             )
 
     def name(self):
@@ -96,7 +96,7 @@ class Lexer:
         if self._current.isspace():
             self.skip()
 
-        number_currency_name = self.number_currency_name()
+        number_currency_name = self.symbol()
         if number_currency_name is not None:
             return number_currency_name
 

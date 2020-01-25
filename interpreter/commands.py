@@ -5,7 +5,7 @@ from interpreter.namespace import Namespace
 
 def operates_state(func):
     def command(*args, **kwargs):
-        state = Namespace.state()
+        state = Namespace()
         return func(state, *args, **kwargs)
 
     return command

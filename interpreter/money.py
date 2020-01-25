@@ -20,7 +20,7 @@ class CurrencyStore(type):
         "Br": "BYN"
     }
 
-    aliases = "".join(_aliases.keys())
+    aliases = list(_aliases.keys())
 
     def __call__(cls, name, *args, **kwargs):
         alias = CurrencyStore._aliases.get(name, None)

@@ -86,7 +86,12 @@ class Parser:
             self.eat(TokenType.RPAREN)
             return node
 
-    parse = expr
+    def parse(self):
+        node = self.expr()
 
+        if self._current.type != TokenType.EOF:
+            raise Exception("Unexpected EOF!")
+
+        return node
 
 
