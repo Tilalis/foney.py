@@ -2,7 +2,7 @@ from typing import Union
 
 from interpreter.lexer import Lexer
 from interpreter.tokens import TokenType
-from interpreter.ast import Symbol, Number, Money, BinaryOperator, Assign, Statements
+from interpreter.ast import Symbol, Number, Money, BinaryOperator, Assign, Statements, Apply
 
 
 class Parser:
@@ -19,7 +19,7 @@ class Parser:
     def statements(self):
         """
         statements: statement | statement DELIMITER (statements)*
-        statement:  expr | SYMBOL ASSIGN statement
+        statement:  expr | SYMBOL ASSIGN statement | SYMBOL factor*
         expr:       term ((PLUS | MINUS) term)*"
         term:       factor ((MUL | DIV) factor)*"
         factor:     (NUMBER | MONEY | SYMBOL) | LPAREN expr RPAREN"
@@ -50,6 +50,15 @@ class Parser:
                 operator=token,
                 right=self.statement()
             )
+
+        if node and node.token.type == TokenType.SYMBOL:
+            # TODO: Need to fix this
+            node = Apply(symbol=node)
+            factor = self.factor()
+
+            while factor:
+                node.add_parameter(factor)
+                factor = self.factor()
 
         return node
 

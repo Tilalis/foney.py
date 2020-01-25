@@ -90,13 +90,11 @@ class Assign(BinaryOperator):
 
 
 class Statements(AST):
-    def __init__(self, nodes=None):
-        if nodes is None:
-            nodes = []
-
-        self._nodes = nodes
+    def __init__(self):
+        self._nodes = []
 
     def add(self, node):
+        assert isinstance(node, AST), "Node should be AST!"
         self._nodes.append(node)
 
     def traverse(self):
@@ -106,3 +104,34 @@ class Statements(AST):
         if self._nodes:
             last_node = self._nodes[-1]
             return last_node.traverse()
+
+
+class Apply(AST):
+    def __init__(self, symbol=None):
+        assert isinstance(symbol, Symbol), "Only symbols can be called!"
+
+        self._fn = namespace.builtins.get("functions", {}).get(symbol.value)
+        self._parameters = []
+        self._result = symbol.traverse() if not self._fn else None
+        self._symbol = symbol
+
+    def add_parameter(self, parameter):
+        assert isinstance(parameter, AST), "Parameter should be AST"
+        self._parameters.append(parameter)
+
+    def traverse(self):
+        # TODO: Need to fix this
+        parameters = [
+            parameter.value if isinstance(parameter, _Value) else parameter.traverse()
+            for parameter in self._parameters
+        ]
+
+        if self._result:
+            if parameters:
+                raise SyntaxError("Cannot call '{}' with parameters '{}', it's not a built-in function!".format(
+                    self._symbol.value,
+                    ", ".join(parameters)
+                ))
+            return self._result
+
+        return self._fn(*parameters)

@@ -32,5 +32,8 @@ class Namespace:
     def get(self, name):
         return self._variables[name]
 
+    def delete(self, name):
+        del self._variables[name]
+
     def items(self):
         return self._variables.items()
