@@ -30,7 +30,7 @@ def from_file(filename):
     with open(filename, "r") as f:
         # TODO: Fix this
         for line in f:
-            result = interpret(line)
+            result = interpret(line.replace('\n', ''))
 
     print(result)
 
