@@ -1,8 +1,9 @@
 import sys
+import readline
 
 from atexit import register
 
-from interpreter.builtin_functions import namespace
+from interpreter.builtins import namespace
 from interpreter.money import Currency
 from interpreter.parser import Parser
 
@@ -42,9 +43,12 @@ def interactive(prompt="foney> "):
             break
 
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) < 2:
         interactive()
     else:
         from_file(sys.argv[1])
 
+
+if __name__ == '__main__':
+    main()
