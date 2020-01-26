@@ -124,8 +124,8 @@ def _exchange(first, second):
         second_to_first = second_amount / first_amount
 
     Currency._exchange_rates.update({
-        "{}_{}".format(first_currency_name, second_currency_name): first_to_second,
-        "{}_{}".format(second_currency_name, first_currency_name): second_to_first
+        "{}_{}".format(first_currency_name, second_currency_name): float(first_to_second),
+        "{}_{}".format(second_currency_name, first_currency_name): float(second_to_first)
     })
 
     print("{} to {} is set to {}".format(first_currency_name, second_currency_name, first_to_second))
