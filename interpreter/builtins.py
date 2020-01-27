@@ -87,6 +87,9 @@ def _if(value, true, false):
     ": arguments: value, currency"
 )
 def _convert(value, to):
+    if isinstance(value, str):
+        value = namespace.get(value)
+
     if not isinstance(value, Money):
         raise Exception("Cannot convert non-Money!")
 
